@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+
+      .auth-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      .auth-card h2 {
+        margin-bottom: 1.5rem;
+        color: #333;
+        font-size: 1.8rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+        text-align: left;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #555;
+        font-weight: 500;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        width: 100%;
+        margin-top: 1rem;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: #667eea;
+        border: 2px solid #667eea;
+      }
+
+      .btn-secondary:hover {
+        background: #667eea;
+        color: white;
+      }
+
+      .switch-auth {
+        margin-top: 1rem;
+        color: #666;
+      }
+
+      .switch-auth button {
+        color: #667eea;
+        background: none;
+        border: none;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: inherit;
+      }
+
+      .error {
+        color: #e74c3c;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+      }
+
+      .dashboard {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .dashboard-header {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .dashboard-header h1 {
+        color: #333;
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .user-info span {
+        color: #666;
+        font-weight: 500;
+      }
+
+      .dashboard-content {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .controls {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .search-input {
+        flex: 1;
+        min-width: 250px;
+        padding: 0.75rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+
+      .filter-select {
+        padding: 0.75rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        min-width: 150px;
+      }
+
+      .add-task-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .add-task-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .tasks-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .task-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+
+      .task-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .task-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+      }
+
+      .task-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .task-actions button {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        transition: all 0.3s;
+      }
+
+      .edit-btn {
+        background: #3498db;
+        color: white;
+      }
+
+      .edit-btn:hover {
+        background: #2980b9;
+        transform: scale(1.1);
+      }
+
+      .delete-btn {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .delete-btn:hover {
+        background: #c0392b;
+        transform: scale(1.1);
+      }
+
+      .task-description {
+        color: #666;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+      }
+
+      .task-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.875rem;
+        color: #888;
+      }
+
+      .task-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+        text-transform: capitalize;
+      }
+
+      .status-pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .status-in-progress {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      .status-completed {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 1rem;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-header h3 {
+        margin: 0;
+        color: #333;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #999;
+      }
+
+      .close-btn:hover {
+        color: #333;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #666;
+      }
+
+      .empty-state h3 {
+        margin-bottom: 1rem;
+        color: #333;
+      }
+
+      .empty-state p {
+        margin-bottom: 2rem;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        .dashboard-header {
+          padding: 1rem;
+          flex-direction: column;
+          gap: 1rem;
+          text-align: center;
+        }
+        
+        .dashboard-content {
+          padding: 1rem;
+        }
+        
+        .controls {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        
+        .search-input {
+          min-width: 100%;
+        }
+        
+        .tasks-container {
+          grid-template-columns: 1fr;
+        }
+        
+        .task-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+        
+        .task-actions {
+          align-self: flex-end;
+        }
+        
+        .form-actions {
+          flex-direction: column;
+        }
+        
+        .user-info {
+          flex-direction: column;
+          text-align: center;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Login Form -->
+      <div id="loginForm" class="container">
+        <div class="auth-card">
+          <h2>Welcome Back!</h2>
+          <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label for="loginEmail">Email</label>
+              <input
+                id="loginEmail"
+                type="email"
+                class="form-control"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <input
+                id="loginPassword"
+                type="password"
+                class="form-control"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <div id="loginError" class="error hidden"></div>
+            <button type="submit" class="btn btn-primary">
+              Sign In
+            </button>
+          </form>
+          <div class="switch-auth">
+            Don't have an account?
+            <button onclick="showRegister()">Sign Up</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" class="container hidden">
+        <div class="auth-card">
+          <h2>Create Account</h2>
+          <form onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label for="registerName">Full Name</label>
+              <input
+                id="registerName"
+                type="text"
+                class="form-control"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="registerEmail">Email</label>
+              <input
+                id="registerEmail"
+                type="email"
+                class="form-control"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="registerPassword">Password</label>
+              <input
+                id="registerPassword"
+                type="password"
+                class="form-control"
+                placeholder="Create a password"
+                required
+                minlength="6"
+              />
+            </div>
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                class="form-control"
+                placeholder="Confirm your password"
+                required
+              />
+            </div>
+            <div id="registerError" class="error hidden"></div>
+            <button type="submit" class="btn btn-primary">
+              Create Account
+            </button>
+          </form>
+          <div class="switch-auth">
+            Already have an account?
+            <button onclick="showLogin()">Sign In</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="dashboard" class="dashboard hidden">
+        <header class="dashboard-header">
+          <h1>Task Manager</h1>
+          <div class="user-info">
+            <span id="userName">Welcome!</span>
+            <button class="btn btn-secondary" onclick="handleLogout()">
+              Logout
+            </button>
+          </div>
+        </header>
+
+        <main class="dashboard-content">
+          <div class="controls">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search tasks..."
+              class="search-input"
+              oninput="filterTasks()"
+            />
+            
+            <select id="statusFilter" class="filter-select" onchange="filterTasks()">
+              <option value="all">All Tasks</option>
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+
+            <button class="add-task-btn" onclick="openTaskModal()" title="Add New Task">
+              +
+            </button>
+          </div>
+
+          <div id="tasksContainer" class="tasks-container">
+            <div class="empty-state">
+              <h3>No tasks found</h3>
+              <p>Get started by adding your first task!</p>
+              <button class="btn btn-primary" onclick="openTaskModal()">
+                Add Your First Task
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Task Modal -->
+      <div id="taskModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="modalTitle">Add New Task</h3>
+            <button class="close-btn" onclick="closeTaskModal()">
+              ×
+            </button>
+          </div>
+
+          <form onsubmit="handleTaskSubmit(event)">
+            <div class="form-group">
+              <label for="taskTitle">Title</label>
+              <input
+                id="taskTitle"
+                type="text"
+                class="form-control"
+                placeholder="Enter task title"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="taskDescription">Description</label>
+              <textarea
+                id="taskDescription"
+                class="form-control"
+                placeholder="Enter task description"
+                rows="4"
+                required
+                style="resize: vertical;"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="taskStatus">Status</label>
+              <select id="taskStatus" class="form-control">
+                <option value="pending">Pending</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            <div id="taskError" class="error hidden"></div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" onclick="closeTaskModal()">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary" id="submitTaskBtn">
+                Add Task
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentUser = null;
+      let tasks = [];
+      let editingTaskId = null;
+
+      // Initialize app
+      document.addEventListener('DOMContentLoaded', function() {
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+          currentUser = JSON.parse(savedUser);
+          showDashboard();
+        } else {
+          showLogin();
+        }
+      });
+
+      function showLogin() {
+        document.getElementById('loginForm').classList.remove('hidden');
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('dashboard').classList.add('hidden');
+      }
+
+      function showRegister() {
+        document.getElementById('registerForm').classList.remove('hidden');
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('dashboard').classList.add('hidden');
+      }
+
+      function showDashboard() {
+        document.getElementById('dashboard').classList.remove('hidden');
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('registerForm').classList.add('hidden');
+        
+        if (currentUser) {
+          document.getElementById('userName').textContent = `Welcome, ${currentUser.name}!`;
+          loadTasks();
+          renderTasks();
+        }
+      }
+
+      function handleLogin(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const errorEl = document.getElementById('loginError');
+        
+        errorEl.classList.add('hidden');
+        
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const user = users.find(u => u.email === email && u.password === password);
+        
+        if (user) {
+          currentUser = { id: user.id, email: user.email, name: user.name };
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          showDashboard();
+        } else {
+          errorEl.textContent = 'Invalid email or password';
+          errorEl.classList.remove('hidden');
+        }
+      }
+
+      function handleRegister(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('registerName').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const errorEl = document.getElementById('registerError');
+        
+        errorEl.classList.add('hidden');
+        
+        if (password !== confirmPassword) {
+          errorEl.textContent = 'Passwords do not match';
+          errorEl.classList.remove('hidden');
+          return;
+        }
+        
+        if (password.length < 6) {
+          errorEl.textContent = 'Password must be at least 6 characters long';
+          errorEl.classList.remove('hidden');
+          return;
+        }
+        
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const existingUser = users.find(u => u.email === email);
+        
+        if (existingUser) {
+          errorEl.textContent = 'User with this email already exists';
+          errorEl.classList.remove('hidden');
+          return;
+        }
+        
+        const newUser = {
+          id: Date.now().toString(),
+          name,
+          email,
+          password
+        };
+        
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+        
+        currentUser = { id: newUser.id, email: newUser.email, name: newUser.name };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        showDashboard();
+      }
+
+      function handleLogout() {
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        showLogin();
+      }
+
+      function loadTasks() {
+        const allTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        tasks = allTasks.filter(task => task.userId === currentUser.id);
+      }
+
+      function saveTasks() {
+        const allTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        const otherUserTasks = allTasks.filter(task => task.userId !== currentUser.id);
+        const newAllTasks = [...otherUserTasks, ...tasks];
+        localStorage.setItem('tasks', JSON.stringify(newAllTasks));
+      }
+
+      function renderTasks() {
+        const container = document.getElementById('tasksContainer');
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        
+        let filteredTasks = tasks;
+        
+        if (searchTerm) {
+          filteredTasks = filteredTasks.filter(task =>
+            task.title.toLowerCase().includes(searchTerm) ||
+            task.description.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        if (statusFilter !== 'all') {
+          filteredTasks = filteredTasks.filter(task => task.status === statusFilter);
+        }
+        
+        if (filteredTasks.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <h3>No tasks found</h3>
+              <p>${searchTerm || statusFilter !== 'all' ? 'Try adjusting your search or filter.' : 'Get started by adding your first task!'}</p>
+              ${!searchTerm && statusFilter === 'all' ? '<button class="btn btn-primary" onclick="openTaskModal()">Add Your First Task</button>' : ''}
+            </div>
+          `;
+          return;
+        }
+        
+        container.innerHTML = filteredTasks.map(task => `
+          <div class="task-card">
+            <div class="task-header">
+              <h3 class="task-title">${task.title}</h3>
+              <div class="task-actions">
+                <button class="edit-btn" onclick="editTask('${task.id}')" title="Edit Task">
+                  ✏️
+                </button>
+                <button class="delete-btn" onclick="deleteTask('${task.id}')" title="Delete Task">
+                  🗑️
+                </button>
+              </div>
+            </div>
+            <p class="task-description">${task.description}</p>
+            <div class="task-meta">
+              <span class="task-status status-${task.status}">
+                ${task.status.replace('-', ' ')}
+              </span>
+              <span class="task-date">
+                ${formatDate(task.createdAt)}
+              </span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function filterTasks() {
+        renderTasks();
+      }
+
+      function openTaskModal() {
+        editingTaskId = null;
+        document.getElementById('modalTitle').textContent = 'Add New Task';
+        document.getElementById('submitTaskBtn').textContent = 'Add Task';
+        document.getElementById('taskTitle').value = '';
+        document.getElementById('taskDescription').value = '';
+        document.getElementById('taskStatus').value = 'pending';
+        document.getElementById('taskError').classList.add('hidden');
+        document.getElementById('taskModal').classList.remove('hidden');
+      }
+
+      function editTask(taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+        
+        editingTaskId = taskId;
+        document.getElementById('modalTitle').textContent = 'Edit Task';
+        document.getElementById('submitTaskBtn').textContent = 'Update Task';
+        document.getElementById('taskTitle').value = task.title;
+        document.getElementById('taskDescription').value = task.description;
+        document.getElementById('taskStatus').value = task.status;
+        document.getElementById('taskError').classList.add('hidden');
+        document.getElementById('taskModal').classList.remove('hidden');
+      }
+
+      function deleteTask(taskId) {
+        if (confirm('Are you sure you want to delete this task?')) {
+          tasks = tasks.filter(task => task.id !== taskId);
+          saveTasks();
+          renderTasks();
+        }
+      }
+
+      function closeTaskModal() {
+        document.getElementById('taskModal').classList.add('hidden');
+        editingTaskId = null;
+      }
+
+      function handleTaskSubmit(event) {
+        event.preventDefault();
+        
+        const title = document.getElementById('taskTitle').value.trim();
+        const description = document.getElementById('taskDescription').value.trim();
+        const status = document.getElementById('taskStatus').value;
+        const errorEl = document.getElementById('taskError');
+        
+        errorEl.classList.add('hidden');
+        
+        if (!title || !description) {
+          errorEl.textContent = 'Please fill in all fields';
+          errorEl.classList.remove('hidden');
+          return;
+        }
+        
+        if (editingTaskId) {
+          // Edit existing task
+          const taskIndex = tasks.findIndex(task => task.id === editingTaskId);
+          if (taskIndex !== -1) {
+            tasks[taskIndex] = { ...tasks[taskIndex], title, description, status };
+          }
+        } else {
+          // Add new task
+          const newTask = {
+            id: Date.now().toString(),
+            title,
+            description,
+            status,
+            createdAt: new Date().toISOString(),
+            userId: currentUser.id
+          };
+          tasks.push(newTask);
+        }
+        
+        saveTasks();
+        renderTasks();
+        closeTaskModal();
+      }
+
+      function formatDate(dateString) {
+        return new Date(dateString).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+      }
+
+      // Close modal when clicking outside
+      document.getElementById('taskModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeTaskModal();
+        }
+      });
+    </script>
+  </body>
+</html>
